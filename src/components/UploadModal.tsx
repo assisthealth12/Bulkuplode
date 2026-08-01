@@ -183,7 +183,7 @@ export default function UploadModal({ onClose }: UploadModalProps) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="py-4">
+        <div className="py-4 max-h-[60vh] overflow-y-auto overflow-x-hidden pr-2">
           {progressState === "upload" || progressState === "validating" ? (
             <div className="space-y-4">
               <div className="space-y-2">
@@ -235,34 +235,89 @@ export default function UploadModal({ onClose }: UploadModalProps) {
               </div>
 
               {showGuide && (
-                <div className="mt-4 p-4 border border-blue-100 rounded-md bg-blue-50/50 text-sm overflow-y-auto max-h-60">
-                  <h4 className="font-semibold text-blue-900 mb-2">Expected Data Format Examples</h4>
-                  <p className="text-gray-600 mb-4 text-xs">Please use proper sentences or specific values rather than just a "Tick" (✔️).</p>
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <div className="space-y-1">
-                      <span className="font-medium text-gray-900 text-xs uppercase">Dental Findings</span>
-                      <p className="text-gray-500 text-xs">e.g., "Normal" or "No cavities"</p>
+                <div className="mt-4 border border-blue-200 rounded-md bg-white overflow-hidden text-sm">
+                  <div className="bg-blue-50 px-4 py-3 border-b border-blue-100 flex justify-between items-center">
+                    <div>
+                      <h4 className="font-semibold text-blue-900">Comprehensive Data Format Guide</h4>
+                      <p className="text-blue-700 text-xs mt-0.5">Please ensure your Excel data matches these exact formats. Avoid using a single "Tick" (✔️) in text fields; write proper sentences instead.</p>
                     </div>
-                    <div className="space-y-1">
-                      <span className="font-medium text-gray-900 text-xs uppercase">Dental Comments</span>
-                      <p className="text-gray-500 text-xs">e.g., "Healthy gums. Continue brushing twice a day."</p>
-                    </div>
-                    <div className="space-y-1">
-                      <span className="font-medium text-gray-900 text-xs uppercase">ENT Comments</span>
-                      <p className="text-gray-500 text-xs">e.g., "Normal hearing. No abnormalities detected."</p>
-                    </div>
-                    <div className="space-y-1">
-                      <span className="font-medium text-gray-900 text-xs uppercase">General Health</span>
-                      <p className="text-gray-500 text-xs">e.g., "Healthy and active student."</p>
-                    </div>
-                    <div className="space-y-1">
-                      <span className="font-medium text-gray-900 text-xs uppercase">Blood Pressure</span>
-                      <p className="text-gray-500 text-xs">e.g., "120/80" (Format: XXX/YY)</p>
-                    </div>
-                    <div className="space-y-1">
-                      <span className="font-medium text-gray-900 text-xs uppercase">Vitals (SpO2, Pulse)</span>
-                      <p className="text-gray-500 text-xs">Numeric values only, e.g., "99", "72"</p>
-                    </div>
+                  </div>
+                  <div className="max-h-80 overflow-y-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-gray-50">
+                          <TableHead className="w-1/3 text-xs uppercase font-semibold">Column Name</TableHead>
+                          <TableHead className="w-1/6 text-xs uppercase font-semibold text-center">Required?</TableHead>
+                          <TableHead className="w-1/2 text-xs uppercase font-semibold">Validation & Example</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell className="font-medium text-gray-900">Student Name</TableCell>
+                          <TableCell className="text-center text-red-600 font-semibold">Yes</TableCell>
+                          <TableCell className="text-gray-600">Text e.g., "John Doe"</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="font-medium text-gray-900">Class & Section</TableCell>
+                          <TableCell className="text-center text-red-600 font-semibold">Yes</TableCell>
+                          <TableCell className="text-gray-600">Text or Number e.g., "10", "A"</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="font-medium text-gray-900">Date of Birth & Date</TableCell>
+                          <TableCell className="text-center text-gray-400">No</TableCell>
+                          <TableCell className="text-gray-600">Standard date format e.g., "14-05-2010"</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="font-medium text-gray-900">Age</TableCell>
+                          <TableCell className="text-center text-gray-400">No</TableCell>
+                          <TableCell className="text-gray-600">Whole number only e.g., "14"</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="font-medium text-gray-900">Gender</TableCell>
+                          <TableCell className="text-center text-gray-400">No</TableCell>
+                          <TableCell className="text-gray-600">Must be "Male", "Female", or "Other"</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="font-medium text-gray-900">Parent Contact Number</TableCell>
+                          <TableCell className="text-center text-gray-400">No</TableCell>
+                          <TableCell className="text-gray-600">Exactly 10 digits e.g., "9876543210"</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="font-medium text-gray-900">Vitals (Height, Weight, Temp, SpO2, Pulse)</TableCell>
+                          <TableCell className="text-center text-gray-400">No</TableCell>
+                          <TableCell className="text-gray-600">Numeric values only e.g., "165.5", "98.6"</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="font-medium text-gray-900">Blood Pressure</TableCell>
+                          <TableCell className="text-center text-gray-400">No</TableCell>
+                          <TableCell className="text-gray-600">Must be format XXX/YY e.g., "120/80"</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="font-medium text-gray-900">Vision (Right/Left Eye)</TableCell>
+                          <TableCell className="text-center text-gray-400">No</TableCell>
+                          <TableCell className="text-gray-600">Text e.g., "6/6"</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="font-medium text-gray-900">Dental Findings (Checkboxes)</TableCell>
+                          <TableCell className="text-center text-gray-400">No</TableCell>
+                          <TableCell className="text-gray-600">
+                            Must include one or more of exactly these words to tick the boxes on the PDF: 
+                            <span className="font-semibold text-gray-900"> Normal, Decayed, Cross Bite, Dental Stains, Other</span>
+                            <br/><span className="text-xs text-gray-400">e.g., "Normal" or "Decayed, Dental Stains"</span>
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="font-medium text-gray-900">All Comments (Vision, Dental, ENT, General Health)</TableCell>
+                          <TableCell className="text-center text-gray-400">No</TableCell>
+                          <TableCell className="text-gray-600">Write proper sentences e.g., "Healthy gums. Continue brushing twice a day."</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="font-medium text-gray-900">Other Text Fields (Parent Name, Nurse/Doctor Name, Medical Reg. No.)</TableCell>
+                          <TableCell className="text-center text-gray-400">No</TableCell>
+                          <TableCell className="text-gray-600">Standard text/names.</TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
                   </div>
                 </div>
               )}

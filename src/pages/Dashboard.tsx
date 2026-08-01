@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { auth, db } from "../firebase"
 import { signOut } from "firebase/auth"
-import { collection, query, orderBy, onSnapshot, doc } from "firebase/firestore"
+import { collection, query, orderBy, onSnapshot } from "firebase/firestore"
 import { deleteUploadAndStudents } from "../lib/firebaseUtils"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"

@@ -57,7 +57,7 @@ export async function updateStudentInUpload(uploadId: string, studentIndex: numb
 }
 
 export async function deleteUploadAndStudents(uploadId: string) {
-  const { doc, collection, query, where, getDocs, deleteDoc, writeBatch } = await import("firebase/firestore")
+  const { doc, collection, query, where, getDocs, writeBatch } = await import("firebase/firestore")
   
   // First, delete all student documents associated with this upload
   const studentsQuery = query(collection(db, "students"), where("uploadId", "==", uploadId))
@@ -76,7 +76,7 @@ export async function deleteUploadAndStudents(uploadId: string) {
 }
 
 export async function deleteStudentFromUpload(uploadId: string, studentIndex: number) {
-  const { doc, getDoc, updateDoc, collection, query, where, getDocs, deleteDoc, writeBatch, increment } = await import("firebase/firestore")
+  const { doc, getDoc, collection, query, where, getDocs, writeBatch, increment } = await import("firebase/firestore")
   const uploadRef = doc(db, "uploads", uploadId)
   
   const uploadSnap = await getDoc(uploadRef)
