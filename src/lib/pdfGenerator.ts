@@ -228,11 +228,14 @@ class FormRenderer {
   }
 
   drawCommentRow(label: string, value: string, labelColWidth: number, tableWidth: number) {
-    this.text(label, MARGIN + 5, this.currentY - 18, 9, this.fonts.bold)
+    // Row height is assumed to be 40. Vertically align label near center.
+    this.text(label, MARGIN + 5, this.currentY - 24, 9, this.fonts.bold)
     const maxWidth = tableWidth - labelColWidth - 10
     const lines = wrapText(String(value || ''), this.fonts.regular, 9, maxWidth, 2)
+    // If there's only 1 line, center it. If 2 lines, stack them.
+    const startY = lines.length > 1 ? this.currentY - 17 : this.currentY - 24
     lines.forEach((line, i) => {
-      this.text(line, MARGIN + labelColWidth + 5, this.currentY - 18 - i * 11, 9, this.fonts.regular)
+      this.text(line, MARGIN + labelColWidth + 5, startY - i * 14, 9, this.fonts.regular)
     })
   }
 
@@ -395,27 +398,25 @@ export async function generateStudentPDF(
   r.text('Vision', MARGIN + 10, r.currentY, 10, fonts.boldItalic)
   r.currentY -= 6
   const visionCols = [cw2[0] * 1.25, cw2[0] * 0.75, cw2[0] * 1.25, cw2[0] * 0.75]
-  r.drawGrid(visionCols, [20, 25])
+  
+  // Top row (4 columns)
+  r.drawGrid(visionCols, [20])
   r.text('Right Eye Vision', MARGIN + 5, r.currentY - 14, 9, fonts.regular)
   r.text(String(student['Right Eye Vision'] || ''), MARGIN + visionCols[0] + 5, r.currentY - 14, 9, fonts.regular)
   r.text('Left Eye Vision', MARGIN + visionCols[0] + visionCols[1] + 5, r.currentY - 14, 9, fonts.regular)
   r.text(String(student['Left Eye Vision'] || ''), MARGIN + visionCols[0] + visionCols[1] + visionCols[2] + 5, r.currentY - 14, 9, fonts.regular)
   
-  r.text('Comments:', MARGIN + 5, r.currentY - 40, 9, fonts.bold)
-  r.text(
-    fitText(String(student['Vision Comments'] || ''), fonts.regular, 9, tableWidth - visionCols[0] - 15),
-    MARGIN + visionCols[0] + 5,
-    r.currentY - 40,
-    9,
-    fonts.regular
-  )
-  r.currentY -= 45
+  // Comments row (2 columns, 40px height for wrapping)
+  r.currentY -= 20
+  r.drawGrid([visionCols[0], tableWidth - visionCols[0]], [40])
+  r.drawCommentRow('Comments', String(student['Vision Comments'] || ''), visionCols[0], tableWidth)
+  r.currentY -= 40
 
   // Dental
   r.currentY -= 15
   r.text('Dental', MARGIN + 10, r.currentY, 10, fonts.boldItalic)
   r.currentY -= 6
-  r.drawGrid([cw2[0], tableWidth - cw2[0]], [20, 25])
+  r.drawGrid([cw2[0], tableWidth - cw2[0]], [20])
   r.text('Findings', MARGIN + 5, r.currentY - 13, 9, fonts.bold)
 
   const dentalVals = String(student['Dental Findings'] || '').toLowerCase()
@@ -435,34 +436,29 @@ export async function generateStudentPDF(
     cbX += cbSpacing
   }
 
-  r.text('Comments:', MARGIN + 5, r.currentY - 35, 9, fonts.bold)
-  r.text(
-    fitText(String(student['Dental Comments'] || ''), fonts.regular, 9, tableWidth - cw2[0] - 15),
-    MARGIN + cw2[0] + 5,
-    r.currentY - 35,
-    9,
-    fonts.regular
-  )
-  r.currentY -= 45
+  r.currentY -= 20
+  r.drawGrid([cw2[0], tableWidth - cw2[0]], [40])
+  r.drawCommentRow('Comments', String(student['Dental Comments'] || ''), cw2[0], tableWidth)
+  r.currentY -= 40
 
   // ENT
   r.currentY -= 15
   r.text('ENT', MARGIN + 10, r.currentY, 10, fonts.boldItalic)
   r.currentY -= 6
-  r.drawGrid([cw2[0], tableWidth - cw2[0]], [25])
+  r.drawGrid([cw2[0], tableWidth - cw2[0]], [40])
   r.drawCommentRow('Comments', String(student['ENT Comments'] || ''), cw2[0], tableWidth)
-  r.currentY -= 25
+  r.currentY -= 40
 
   // General Health
   r.currentY -= 15
   r.text('General Health', MARGIN + 10, r.currentY, 10, fonts.boldItalic)
   r.currentY -= 6
-  r.drawGrid([cw2[0], tableWidth - cw2[0]], [25])
+  r.drawGrid([cw2[0], tableWidth - cw2[0]], [40])
   r.drawCommentRow('Comments', String(student['General Health Comments'] || ''), cw2[0], tableWidth)
-  r.currentY -= 25
+  r.currentY -= 40
 
   // --- Sign-off box --------------------------------------------------------
-  r.currentY -= 15 // Add breathing room before signature box
+  r.currentY -= 45 // Push signature box further down to add visual separation
   r.ensureSpacePublic(70)
   const signBoxY = r.currentY
   const signBoxH = 55
