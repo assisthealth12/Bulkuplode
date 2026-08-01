@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react"
 import { auth, db } from "../firebase"
 import { signOut } from "firebase/auth"
-import { collection, query, orderBy, onSnapshot, deleteDoc, doc } from "firebase/firestore"
+import { collection, query, orderBy, onSnapshot, doc } from "firebase/firestore"
+import { deleteUploadAndStudents } from "../lib/firebaseUtils"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Download, Upload, LogOut, Trash2, ChevronRight } from "lucide-react"
@@ -53,9 +54,9 @@ export default function Dashboard() {
 
   const handleDelete = async (id: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation()
-    if (confirm("Are you sure you want to delete this upload?")) {
+    if (confirm("Are you sure you want to delete this upload? This will also delete all students in this batch from the database.")) {
       try {
-        await deleteDoc(doc(db, "uploads", id))
+        await deleteUploadAndStudents(id)
         if (selectedBatch?.id === id) {
           setActiveTab("uploads")
           setSelectedBatch(null)

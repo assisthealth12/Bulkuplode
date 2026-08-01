@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import type { StudentData } from "../lib/validation"
-import { updateStudentInUpload } from "../lib/firebaseUtils"
-import { X, Check, Loader2 } from "lucide-react"
+import { updateStudentInUpload, deleteStudentFromUpload } from "../lib/firebaseUtils"
+import { X, Check, Loader2, Trash2 } from "lucide-react"
 
 interface EditStudentPanelProps {
   uploadId: string
@@ -64,6 +64,18 @@ export default function EditStudentPanel({ uploadId, studentIndex, student, onCl
     setIsSaving(false)
   }
 
+  const handleDelete = async () => {
+    if (confirm("Are you sure you want to delete this student from the batch and the database?")) {
+      try {
+        await deleteStudentFromUpload(uploadId, studentIndex)
+        onClose() // Close panel after deletion
+      } catch (err) {
+        console.error(err)
+        alert("Failed to delete")
+      }
+    }
+  }
+
   return (
     <>
       {/* Backdrop */}
@@ -80,9 +92,14 @@ export default function EditStudentPanel({ uploadId, studentIndex, student, onCl
               Class {String(student["Class"])} &middot; Section {String(student["Section"])}
             </p>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors p-1 -mr-1">
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-1">
+            <button onClick={handleDelete} className="text-gray-400 hover:text-red-500 transition-colors p-1" title="Delete Student">
+              <Trash2 className="w-4 h-4" />
+            </button>
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors p-1 -mr-1" title="Close">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Body — scrollable */}

@@ -22,6 +22,7 @@ export default function UploadModal({ onClose }: UploadModalProps) {
   const [progressState, setProgressState] = useState<"upload" | "validating" | "ready" | "generating" | "done">("upload")
   const [generationProgress, setGenerationProgress] = useState(0)
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
+  const [showGuide, setShowGuide] = useState(false)
 
   const downloadTemplate = () => {
     const headers = [
@@ -223,7 +224,48 @@ export default function UploadModal({ onClose }: UploadModalProps) {
                   <Download className="w-3.5 h-3.5 mr-1.5" />
                   Need the Excel template? Download it here
                 </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setShowGuide(!showGuide)} 
+                  className="h-8 text-xs text-blue-500 hover:text-blue-700 ml-2" 
+                >
+                  {showGuide ? "Hide Data Guide" : "View Data Guide"}
+                </Button>
               </div>
+
+              {showGuide && (
+                <div className="mt-4 p-4 border border-blue-100 rounded-md bg-blue-50/50 text-sm overflow-y-auto max-h-60">
+                  <h4 className="font-semibold text-blue-900 mb-2">Expected Data Format Examples</h4>
+                  <p className="text-gray-600 mb-4 text-xs">Please use proper sentences or specific values rather than just a "Tick" (✔️).</p>
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <div className="space-y-1">
+                      <span className="font-medium text-gray-900 text-xs uppercase">Dental Findings</span>
+                      <p className="text-gray-500 text-xs">e.g., "Normal" or "No cavities"</p>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="font-medium text-gray-900 text-xs uppercase">Dental Comments</span>
+                      <p className="text-gray-500 text-xs">e.g., "Healthy gums. Continue brushing twice a day."</p>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="font-medium text-gray-900 text-xs uppercase">ENT Comments</span>
+                      <p className="text-gray-500 text-xs">e.g., "Normal hearing. No abnormalities detected."</p>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="font-medium text-gray-900 text-xs uppercase">General Health</span>
+                      <p className="text-gray-500 text-xs">e.g., "Healthy and active student."</p>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="font-medium text-gray-900 text-xs uppercase">Blood Pressure</span>
+                      <p className="text-gray-500 text-xs">e.g., "120/80" (Format: XXX/YY)</p>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="font-medium text-gray-900 text-xs uppercase">Vitals (SpO2, Pulse)</span>
+                      <p className="text-gray-500 text-xs">Numeric values only, e.g., "99", "72"</p>
+                    </div>
+                  </div>
+                </div>
+              )}
               
               {errors.length > 0 && (
                 <div className="mt-4 border border-red-200 rounded-md overflow-hidden bg-red-50">
