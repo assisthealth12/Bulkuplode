@@ -1,6 +1,7 @@
 import { PDFDocument, PDFFont, PDFPage, rgb, StandardFonts } from 'pdf-lib'
 import type { Color } from 'pdf-lib'
 import type { StudentData } from './validation'
+import { parseExcelDate } from './utils'
 
 // ---------------------------------------------------------------------------
 // Layout constants — tweak these instead of hunting for magic numbers below.
@@ -64,15 +65,7 @@ function wrapText(text: string, font: PDFFont, size: number, maxWidth: number, m
   return lines
 }
 
-function parseExcelDate(val: unknown): string {
-  if (!val) return ''
-  if (val instanceof Date) return val.toLocaleDateString('en-IN')
-  if (typeof val === 'number') {
-    const d = new Date(Math.round((val - 25569) * 86400 * 1000))
-    if (!isNaN(d.getTime())) return d.toLocaleDateString('en-IN')
-  }
-  return String(val)
-}
+
 
 /**
  * Computes BMI from height/weight, handling the common data-entry ambiguity

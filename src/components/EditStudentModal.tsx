@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input"
 import type { StudentData } from "../lib/validation"
 import { updateStudentInUpload } from "../lib/firebaseUtils"
+import { parseExcelDate } from "../lib/utils"
 import { User, Activity, Eye, Stethoscope } from "lucide-react"
 
 interface EditStudentModalProps {
@@ -14,7 +15,11 @@ interface EditStudentModalProps {
 }
 
 export default function EditStudentModal({ uploadId, studentIndex, student, onClose }: EditStudentModalProps) {
-  const [formData, setFormData] = useState<StudentData>({ ...student })
+  const [formData, setFormData] = useState<StudentData>({ 
+    ...student,
+    "Date of Birth": parseExcelDate(student["Date of Birth"]),
+    "Date": parseExcelDate(student["Date"])
+  })
   const [isSaving, setIsSaving] = useState(false)
 
   const handleChange = (field: keyof StudentData, value: string) => {

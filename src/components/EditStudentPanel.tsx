@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import type { StudentData } from "../lib/validation"
 import { updateStudentInUpload, deleteStudentFromUpload } from "../lib/firebaseUtils"
+import { parseExcelDate } from "../lib/utils"
 import { X, Check, Loader2, Trash2 } from "lucide-react"
 
 interface EditStudentPanelProps {
@@ -36,13 +37,21 @@ const Field = ({
 )
 
 export default function EditStudentPanel({ uploadId, studentIndex, student, onClose }: EditStudentPanelProps) {
-  const [formData, setFormData] = useState<StudentData>({ ...student })
+  const [formData, setFormData] = useState<StudentData>({ 
+    ...student,
+    "Date of Birth": parseExcelDate(student["Date of Birth"]),
+    "Date": parseExcelDate(student["Date"])
+  })
   const [isSaving, setIsSaving] = useState(false)
   const [saved, setSaved] = useState(false)
 
   // Reset form when student changes
   useEffect(() => {
-    setFormData({ ...student })
+    setFormData({ 
+      ...student,
+      "Date of Birth": parseExcelDate(student["Date of Birth"]),
+      "Date": parseExcelDate(student["Date"])
+    })
     setSaved(false)
   }, [student, studentIndex])
 
