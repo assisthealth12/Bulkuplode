@@ -112,6 +112,11 @@ export default function EditStudentPanel({ uploadId, studentIndex, student, onCl
               <Field label="Name" field="Student Name" formData={formData} handleChange={handleChange} isSaving={isSaving} />
               <Field label="Class" field="Class" formData={formData} handleChange={handleChange} isSaving={isSaving} />
               <Field label="Section" field="Section" formData={formData} handleChange={handleChange} isSaving={isSaving} />
+              <Field label="Date of Birth" field="Date of Birth" formData={formData} handleChange={handleChange} isSaving={isSaving} />
+              <Field label="Age" field="Age" formData={formData} handleChange={handleChange} isSaving={isSaving} />
+              <Field label="Gender" field="Gender" formData={formData} handleChange={handleChange} isSaving={isSaving} />
+              <Field label="Parent Name" field="Parent / Guardian Name" formData={formData} handleChange={handleChange} isSaving={isSaving} />
+              <Field label="Parent Contact" field="Parent Contact Number" formData={formData} handleChange={handleChange} isSaving={isSaving} />
             </div>
           </section>
 
@@ -154,6 +159,18 @@ export default function EditStudentPanel({ uploadId, studentIndex, student, onCl
               <Field label="Dental Comments" field="Dental Comments" formData={formData} handleChange={handleChange} isSaving={isSaving} />
               <Field label="ENT Comments" field="ENT Comments" formData={formData} handleChange={handleChange} isSaving={isSaving} />
               <Field label="General Health" field="General Health Comments" formData={formData} handleChange={handleChange} isSaving={isSaving} />
+            </div>
+          </section>
+
+          <hr className="border-gray-100" />
+
+          {/* Sign-off Details */}
+          <section>
+            <h4 className="text-[11px] font-semibold text-gray-300 uppercase tracking-widest mb-3">Sign-off Details</h4>
+            <div className="space-y-3">
+              <Field label="School Nurse / Doctor" field="School Nurse / Doctor Name" formData={formData} handleChange={handleChange} isSaving={isSaving} />
+              <Field label="Medical Reg. Number" field="Medical Reg. Number" formData={formData} handleChange={handleChange} isSaving={isSaving} />
+              <Field label="Date" field="Date" formData={formData} handleChange={handleChange} isSaving={isSaving} />
             </div>
           </section>
         </div>
