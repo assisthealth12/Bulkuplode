@@ -3,7 +3,8 @@ import { Input } from "@/components/ui/input"
 import type { StudentData } from "../lib/validation"
 import { updateStudentInUpload, deleteStudentFromUpload } from "../lib/firebaseUtils"
 import { parseExcelDate } from "../lib/utils"
-import { X, Check, Loader2, Trash2 } from "lucide-react"
+import { X, Check, Loader2, Trash2, Download } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 interface EditStudentPanelProps {
   uploadId: string
@@ -37,6 +38,7 @@ const Field = ({
 )
 
 export default function EditStudentPanel({ uploadId, studentIndex, student, onClose }: EditStudentPanelProps) {
+  const { toast } = useToast()
   const [formData, setFormData] = useState<StudentData>({ 
     ...student,
     "Date of Birth": parseExcelDate(student["Date of Birth"]),
@@ -44,6 +46,7 @@ export default function EditStudentPanel({ uploadId, studentIndex, student, onCl
   })
   const [isSaving, setIsSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
 
   // Reset form when student changes
   useEffect(() => {
@@ -65,10 +68,18 @@ export default function EditStudentPanel({ uploadId, studentIndex, student, onCl
     try {
       await updateStudentInUpload(uploadId, studentIndex, formData)
       setSaved(true)
+      toast({
+        title: "Success",
+        description: "Student details updated successfully.",
+      })
       setTimeout(() => setSaved(false), 2000)
     } catch (err) {
       console.error(err)
-      alert("Failed to save")
+      toast({
+        title: "Error",
+        description: "Failed to save student data.",
+        variant: "destructive",
+      })
     }
     setIsSaving(false)
   }
@@ -77,12 +88,71 @@ export default function EditStudentPanel({ uploadId, studentIndex, student, onCl
     if (confirm("Are you sure you want to delete this student from the batch and the database?")) {
       try {
         await deleteStudentFromUpload(uploadId, studentIndex)
+        toast({
+          title: "Deleted",
+          description: "Student removed successfully.",
+        })
         onClose() // Close panel after deletion
       } catch (err) {
         console.error(err)
-        alert("Failed to delete")
+        toast({
+          title: "Error",
+          description: "Failed to delete student.",
+          variant: "destructive",
+        })
       }
     }
+  }
+
+  const handleDownloadPDF = async () => {
+    setIsDownloading(true)
+    try {
+      const logo1Res = await fetch("/Images/LOGO1.png")
+      const logo1Bytes = await logo1Res.arrayBuffer()
+
+      const logo2Res = await fetch("/Images/LOGO2.png")
+      const logo2Bytes = await logo2Res.arrayBuffer()
+
+      let signatureBytes: ArrayBuffer | undefined = undefined
+      const signatureNames = ['Singature.png', 'signature.png', 'Signature.png', 'singature.png']
+      for (const name of signatureNames) {
+        try {
+          const sigRes = await fetch(`/Images/${name}`)
+          const ct = sigRes.headers.get('content-type') || ''
+          if (sigRes.ok && ct.startsWith('image/')) {
+            signatureBytes = await sigRes.arrayBuffer()
+            break
+          }
+        } catch { /* skip */ }
+      }
+
+      const { generateStudentPDF } = await import("../lib/pdfGenerator")
+      const pdfBytes = await generateStudentPDF(formData, logo1Bytes, logo2Bytes, signatureBytes)
+
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      const safeName = String(formData["Student Name"] || "student").replace(/[^a-z0-9]/gi, '_').toLowerCase()
+      a.download = `${safeName}_report.pdf`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+
+      toast({
+        title: "Downloaded",
+        description: `PDF for ${formData["Student Name"]} downloaded.`,
+      })
+    } catch (err) {
+      console.error(err)
+      toast({
+        title: "Error",
+        description: "Failed to generate PDF.",
+        variant: "destructive",
+      })
+    }
+    setIsDownloading(false)
   }
 
   return (
@@ -102,6 +172,9 @@ export default function EditStudentPanel({ uploadId, studentIndex, student, onCl
             </p>
           </div>
           <div className="flex items-center gap-1">
+            <button onClick={handleDownloadPDF} disabled={isDownloading} className="text-gray-400 hover:text-blue-600 transition-colors p-1" title="Download PDF">
+              {isDownloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+            </button>
             <button onClick={handleDelete} className="text-gray-400 hover:text-red-500 transition-colors p-1" title="Delete Student">
               <Trash2 className="w-4 h-4" />
             </button>

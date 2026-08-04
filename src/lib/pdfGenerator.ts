@@ -220,15 +220,14 @@ class FormRenderer {
     return { startX, startY, totalWidth }
   }
 
-  drawCommentRow(label: string, value: string, labelColWidth: number, tableWidth: number) {
-    // Row height is assumed to be 40. Vertically align label near center.
-    this.text(label, MARGIN + 5, this.currentY - 24, 9, this.fonts.bold)
+  drawCommentRow(label: string, value: string, labelColWidth: number, tableWidth: number, rowHeight = 28) {
+    // Vertically align label near center of the row.
+    this.text(label, MARGIN + 5, this.currentY - (rowHeight / 2 + 4), 9, this.fonts.bold)
     const maxWidth = tableWidth - labelColWidth - 10
     const lines = wrapText(String(value || ''), this.fonts.regular, 9, maxWidth, 2)
-    // If there's only 1 line, center it. If 2 lines, stack them.
-    const startY = lines.length > 1 ? this.currentY - 17 : this.currentY - 24
+    const startY = lines.length > 1 ? this.currentY - (rowHeight / 2 - 3) : this.currentY - (rowHeight / 2 + 4)
     lines.forEach((line, i) => {
-      this.text(line, MARGIN + labelColWidth + 5, startY - i * 14, 9, this.fonts.regular)
+      this.text(line, MARGIN + labelColWidth + 5, startY - i * 12, 9, this.fonts.regular)
     })
   }
 
@@ -387,7 +386,7 @@ export async function generateStudentPDF(
   r.currentY -= 80
 
   // Vision
-  r.currentY -= 5
+  r.currentY -= 12
   r.text('Vision', MARGIN + 10, r.currentY, 10, fonts.boldItalic)
   r.currentY -= 4
   const visionCols = [cw2[0] * 1.25, cw2[0] * 0.75, cw2[0] * 1.25, cw2[0] * 0.75]
@@ -399,14 +398,14 @@ export async function generateStudentPDF(
   r.text('Left Eye Vision', MARGIN + visionCols[0] + visionCols[1] + 5, r.currentY - 14, 9, fonts.regular)
   r.text(String(student['Left Eye Vision'] || ''), MARGIN + visionCols[0] + visionCols[1] + visionCols[2] + 5, r.currentY - 14, 9, fonts.regular)
   
-  // Comments row (2 columns, 40px height for wrapping)
+  // Comments row (2 columns, 28px height for wrapping)
   r.currentY -= 20
-  r.drawGrid([visionCols[0], tableWidth - visionCols[0]], [40])
+  r.drawGrid([visionCols[0], tableWidth - visionCols[0]], [28])
   r.drawCommentRow('Comments', String(student['Vision Comments'] || ''), visionCols[0], tableWidth)
-  r.currentY -= 40
+  r.currentY -= 28
 
   // Dental
-  r.currentY -= 5
+  r.currentY -= 12
   r.text('Dental', MARGIN + 10, r.currentY, 10, fonts.boldItalic)
   r.currentY -= 4
   r.drawGrid([cw2[0], tableWidth - cw2[0]], [20])
@@ -430,29 +429,29 @@ export async function generateStudentPDF(
   }
 
   r.currentY -= 20
-  r.drawGrid([cw2[0], tableWidth - cw2[0]], [40])
+  r.drawGrid([cw2[0], tableWidth - cw2[0]], [28])
   r.drawCommentRow('Comments', String(student['Dental Comments'] || ''), cw2[0], tableWidth)
-  r.currentY -= 40
+  r.currentY -= 28
 
   // ENT
-  r.currentY -= 5
+  r.currentY -= 12
   r.text('ENT', MARGIN + 10, r.currentY, 10, fonts.boldItalic)
   r.currentY -= 4
-  r.drawGrid([cw2[0], tableWidth - cw2[0]], [40])
+  r.drawGrid([cw2[0], tableWidth - cw2[0]], [28])
   r.drawCommentRow('Comments', String(student['ENT Comments'] || ''), cw2[0], tableWidth)
-  r.currentY -= 40
+  r.currentY -= 28
 
   // General Health
-  r.currentY -= 5
+  r.currentY -= 12
   r.text('General Health', MARGIN + 10, r.currentY, 10, fonts.boldItalic)
   r.currentY -= 4
   r.drawGrid([cw2[0], tableWidth - cw2[0]], [40])
-  r.drawCommentRow('Comments', String(student['General Health Comments'] || ''), cw2[0], tableWidth)
+  r.drawCommentRow('Comments', String(student['General Health Comments'] || ''), cw2[0], tableWidth, 40)
   r.currentY -= 40
 
   // --- Sign-off box --------------------------------------------------------
-  r.currentY -= 10 // Reduced padding to keep on one page
-  r.ensureSpacePublic(70)
+  r.currentY -= 5
+  r.ensureSpacePublic(60)
   const signBoxY = r.currentY
   const signBoxH = 55
   
@@ -477,19 +476,15 @@ export async function generateStudentPDF(
     fonts.regular
   )
 
-  // Signature Image (if provided)
-  console.log('[PDF] signatureBytes provided:', !!signatureBytes, signatureBytes ? signatureBytes.byteLength : 0)
+  // Signature Image (if provided) — position it so it sits just above the Signature line
   if (signatureBytes) {
     try {
-      const dims = await r.drawImageFit(signatureBytes, 'png', MARGIN + 65, signBoxY - 15, 160, 50)
-      console.log('[PDF] Signature drawn as PNG, dims:', dims)
-    } catch (pngErr) {
-      console.warn('[PDF] PNG embed failed:', pngErr)
+      await r.drawImageFit(signatureBytes, 'png', MARGIN + 65, signBoxY - 18, 140, 25)
+    } catch {
       try {
-        const dims = await r.drawImageFit(signatureBytes, 'jpg', MARGIN + 65, signBoxY - 15, 160, 50)
-        console.log('[PDF] Signature drawn as JPG, dims:', dims)
-      } catch (jpgErr) {
-        console.warn('[PDF] JPG embed also failed:', jpgErr)
+        await r.drawImageFit(signatureBytes, 'jpg', MARGIN + 65, signBoxY - 18, 140, 25)
+      } catch {
+        console.warn('[PDF] Failed to embed signature image')
       }
     }
   }
