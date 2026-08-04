@@ -65,6 +65,26 @@ export default function EditStudentModal({ uploadId, studentIndex, student, onCl
                 <label className="text-sm font-medium text-gray-700">Section</label>
                 <Input value={String(formData["Section"] || "")} onChange={(e) => handleChange("Section", e.target.value)} disabled={isSaving} className="bg-white" />
               </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">Date of Birth</label>
+                <Input value={String(formData["Date of Birth"] || "")} onChange={(e) => handleChange("Date of Birth", e.target.value)} disabled={isSaving} className="bg-white" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">Age</label>
+                <Input value={String(formData["Age"] || "")} onChange={(e) => handleChange("Age", e.target.value)} disabled={isSaving} className="bg-white" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">Gender</label>
+                <Input value={String(formData["Gender"] || "")} onChange={(e) => handleChange("Gender", e.target.value)} disabled={isSaving} className="bg-white" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">Parent / Guardian Name</label>
+                <Input value={String(formData["Parent / Guardian Name"] || "")} onChange={(e) => handleChange("Parent / Guardian Name", e.target.value)} disabled={isSaving} className="bg-white" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">Parent Contact</label>
+                <Input value={String(formData["Parent Contact Number"] || "")} onChange={(e) => handleChange("Parent Contact Number", e.target.value)} disabled={isSaving} className="bg-white" />
+              </div>
             </div>
           </section>
 
@@ -142,7 +162,28 @@ export default function EditStudentModal({ uploadId, studentIndex, student, onCl
               </div>
               <div className="space-y-1.5">
                 <label className="text-sm font-medium text-gray-700">General Health Comments</label>
-                <Input value={String(formData["General Health Comments"] || "")} onChange={(e) => handleChange("General Health Comments", e.target.value)} disabled={isSaving} />
+                <Input value={String(formData["General Health Comments"] || "")} onChange={(e) => handleChange("General Health Comments", e.target.value)} disabled={isSaving} className="bg-white" />
+              </div>
+            </div>
+          </section>
+
+          {/* Sign-off Details */}
+          <section className="space-y-4">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-500 flex items-center gap-2">
+              <User className="w-4 h-4" /> Sign-off Details
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">School Nurse / Doctor</label>
+                <Input value={String(formData["School Nurse / Doctor Name"] || "")} onChange={(e) => handleChange("School Nurse / Doctor Name", e.target.value)} disabled={isSaving} className="bg-white" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">Medical Reg. Number</label>
+                <Input value={String(formData["Medical Reg. Number"] || "")} onChange={(e) => handleChange("Medical Reg. Number", e.target.value)} disabled={isSaving} className="bg-white" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">Date</label>
+                <Input value={String(formData["Date"] || "")} onChange={(e) => handleChange("Date", e.target.value)} disabled={isSaving} className="bg-white" />
               </div>
             </div>
           </section>
