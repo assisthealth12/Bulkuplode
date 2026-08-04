@@ -322,14 +322,14 @@ export async function generateStudentPDF(
 
   r.currentY = height - 110
   r.line(MARGIN, r.currentY, width - MARGIN, r.currentY, 1)
-  r.currentY -= 15
+  r.currentY -= 10
 
   // --- Student details -----------------------------------------------------
-  r.ensureSpacePublic(30)
+  r.ensureSpacePublic(25)
   r.text('Student Details', MARGIN + 10, r.currentY, 11, fonts.bold)
   r.currentY -= 5
   r.line(MARGIN + 10, r.currentY, width - MARGIN - 10, r.currentY, 1)
-  r.currentY -= 20
+  r.currentY -= 15
 
   const classSec =
     student['Class'] && student['Section']
@@ -344,14 +344,14 @@ export async function generateStudentPDF(
 
   r.currentY -= 5
   r.line(MARGIN, r.currentY, width - MARGIN, r.currentY, 1)
-  r.currentY -= 15
+  r.currentY -= 10
 
   // --- Health assessment summary -------------------------------------------
-  r.ensureSpacePublic(30)
+  r.ensureSpacePublic(25)
   r.text('Health Assessment Summary', MARGIN + 10, r.currentY, 11, fonts.bold)
   r.currentY -= 5
   r.line(MARGIN + 10, r.currentY, width - MARGIN - 10, r.currentY, 1)
-  r.currentY -= 20
+  r.currentY -= 15
 
   const tableWidth = width - 2 * MARGIN
   const cw2 = [tableWidth * 0.25, tableWidth * 0.25, tableWidth * 0.25, tableWidth * 0.25]
@@ -394,9 +394,9 @@ export async function generateStudentPDF(
   r.currentY -= 80
 
   // Vision
-  r.currentY -= 15
+  r.currentY -= 5
   r.text('Vision', MARGIN + 10, r.currentY, 10, fonts.boldItalic)
-  r.currentY -= 6
+  r.currentY -= 4
   const visionCols = [cw2[0] * 1.25, cw2[0] * 0.75, cw2[0] * 1.25, cw2[0] * 0.75]
   
   // Top row (4 columns)
@@ -413,9 +413,9 @@ export async function generateStudentPDF(
   r.currentY -= 40
 
   // Dental
-  r.currentY -= 15
+  r.currentY -= 5
   r.text('Dental', MARGIN + 10, r.currentY, 10, fonts.boldItalic)
-  r.currentY -= 6
+  r.currentY -= 4
   r.drawGrid([cw2[0], tableWidth - cw2[0]], [20])
   r.text('Findings', MARGIN + 5, r.currentY - 13, 9, fonts.bold)
 
@@ -442,23 +442,23 @@ export async function generateStudentPDF(
   r.currentY -= 40
 
   // ENT
-  r.currentY -= 15
+  r.currentY -= 5
   r.text('ENT', MARGIN + 10, r.currentY, 10, fonts.boldItalic)
-  r.currentY -= 6
+  r.currentY -= 4
   r.drawGrid([cw2[0], tableWidth - cw2[0]], [40])
   r.drawCommentRow('Comments', String(student['ENT Comments'] || ''), cw2[0], tableWidth)
   r.currentY -= 40
 
   // General Health
-  r.currentY -= 15
+  r.currentY -= 5
   r.text('General Health', MARGIN + 10, r.currentY, 10, fonts.boldItalic)
-  r.currentY -= 6
+  r.currentY -= 4
   r.drawGrid([cw2[0], tableWidth - cw2[0]], [40])
   r.drawCommentRow('Comments', String(student['General Health Comments'] || ''), cw2[0], tableWidth)
   r.currentY -= 40
 
   // --- Sign-off box --------------------------------------------------------
-  r.currentY -= 45 // Push signature box further down to add visual separation
+  r.currentY -= 10 // Reduced padding to keep on one page
   r.ensureSpacePublic(70)
   const signBoxY = r.currentY
   const signBoxH = 55
