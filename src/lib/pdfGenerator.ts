@@ -363,19 +363,19 @@ export async function generateStudentPDF(
   const bmiStr = computeBMI(student['Height'], student['Weight'])
 
   drawCellTxt('Height', 0, 1)
-  drawCellTxt(String(student['Height'] || ''), 1, 1)
+  drawCellTxt(student['Height'] ? `${student['Height']} cm` : '', 1, 1)
   drawCellTxt('Weight', 2, 1)
-  drawCellTxt(String(student['Weight'] || ''), 3, 1)
+  drawCellTxt(student['Weight'] ? `${student['Weight']} kg` : '', 3, 1)
   
   drawCellTxt('BMI', 0, 2)
   drawCellTxt(bmiStr, 1, 2)
   drawCellTxt('Temperature', 2, 2)
-  drawCellTxt(String(student['Temperature'] || ''), 3, 2)
+  drawCellTxt(student['Temperature'] ? `${student['Temperature']} °F` : '', 3, 2)
   
   drawCellTxt('SpO2', 0, 3)
-  drawCellTxt(String(student['SpO2'] || ''), 1, 3)
+  drawCellTxt(student['SpO2'] ? `${student['SpO2']}%` : '', 1, 3)
   drawCellTxt('Pulse', 2, 3)
-  drawCellTxt(String(student['Pulse'] || ''), 3, 3)
+  drawCellTxt(student['Pulse'] ? `${student['Pulse']} bpm` : '', 3, 3)
   
   // Blood Pressure spans across 2, 3, 4
   drawCellTxt('Blood Pressure (BP)', 0, 4)
