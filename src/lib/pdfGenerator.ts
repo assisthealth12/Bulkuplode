@@ -412,7 +412,7 @@ export async function generateStudentPDF(
   r.text('Findings', MARGIN + 5, r.currentY - 13, 9, fonts.bold)
 
   const dentalVals = String(student['Dental Findings'] || '').toLowerCase()
-  const cbOpts = ['Normal', 'Decayed', 'Cross Bite', 'Dental Stains', 'Other']
+  const cbOpts = ['Normal', 'Decayed', 'Cross Bite', 'Dental Stains', 'Calculus', 'Other']
   const cbAreaWidth = tableWidth - cw2[0]
   const cbSpacing = cbAreaWidth / cbOpts.length
   const cbY = r.currentY - 13

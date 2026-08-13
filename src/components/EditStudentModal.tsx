@@ -6,6 +6,7 @@ import type { StudentData } from "../lib/validation"
 import { updateStudentInUpload } from "../lib/firebaseUtils"
 import { parseExcelDate } from "../lib/utils"
 import { User, Activity, Eye, Stethoscope } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 interface EditStudentModalProps {
   uploadId: string
@@ -15,6 +16,7 @@ interface EditStudentModalProps {
 }
 
 export default function EditStudentModal({ uploadId, studentIndex, student, onClose }: EditStudentModalProps) {
+  const { toast } = useToast()
   const [formData, setFormData] = useState<StudentData>({ 
     ...student,
     "Date of Birth": parseExcelDate(student["Date of Birth"]),
@@ -30,10 +32,18 @@ export default function EditStudentModal({ uploadId, studentIndex, student, onCl
     setIsSaving(true)
     try {
       await updateStudentInUpload(uploadId, studentIndex, formData)
+      toast({
+        title: "Success",
+        description: "Student details updated successfully.",
+      })
       onClose()
     } catch (err) {
       console.error(err)
-      alert("Failed to save student data")
+      toast({
+        title: "Error",
+        description: "Failed to save student data.",
+        variant: "destructive",
+      })
     }
     setIsSaving(false)
   }
@@ -154,7 +164,7 @@ export default function EditStudentModal({ uploadId, studentIndex, student, onCl
             </h3>
             <div className="grid grid-cols-1 gap-4 p-4 bg-white border border-gray-100 rounded-xl shadow-sm">
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">Dental Findings (e.g., Normal, Decayed, Cross Bite)</label>
+                <label className="text-sm font-medium text-gray-700">Dental Findings (e.g., Normal, Decayed, Cross Bite, Calculus)</label>
                 <Input value={String(formData["Dental Findings"] || "")} onChange={(e) => handleChange("Dental Findings", e.target.value)} disabled={isSaving} />
               </div>
               <div className="space-y-1.5">

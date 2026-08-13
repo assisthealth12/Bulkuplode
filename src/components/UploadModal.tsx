@@ -14,6 +14,7 @@ interface UploadModalProps {
 export default function UploadModal({ onClose }: UploadModalProps) {
   const [file, setFile] = useState<File | null>(null)
   const [className, setClassName] = useState("")
+  const [assessmentDate, setAssessmentDate] = useState("")
   const [validData, setValidData] = useState<StudentData[]>([])
   const [errors, setErrors] = useState<{ row: number; issues: string[] }[]>([])
   const [isProcessing, setIsProcessing] = useState(false)
@@ -74,6 +75,16 @@ export default function UploadModal({ onClose }: UploadModalProps) {
         jsonData.forEach((row: any, index) => {
           const rowNum = index + 2 // +2 because header is row 1, and array is 0-indexed
           
+          // Apply modal date to row if not present
+          if (assessmentDate && (!row["Date"] || String(row["Date"]).trim() === '')) {
+            const parts = assessmentDate.split('-')
+            if (parts.length === 3) {
+              row["Date"] = `${parts[2]}-${parts[1]}-${parts[0]}` // DD-MM-YYYY
+            } else {
+              row["Date"] = assessmentDate
+            }
+          }
+
           // Format strings to avoid undefined errors in zod regex
           Object.keys(row).forEach(key => {
             if (typeof row[key] === 'string') {
@@ -186,15 +197,26 @@ export default function UploadModal({ onClose }: UploadModalProps) {
         <div className="py-4 max-h-[60vh] overflow-y-auto overflow-x-hidden pr-2">
           {progressState === "upload" || progressState === "validating" ? (
             <div className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Class Name / Batch Label</label>
-                <Input 
-                  type="text" 
-                  placeholder="e.g., Class 10A" 
-                  value={className}
-                  onChange={(e) => setClassName(e.target.value)}
-                  disabled={isProcessing}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Class Name / Batch Label</label>
+                  <Input 
+                    type="text" 
+                    placeholder="e.g., Class 10A" 
+                    value={className}
+                    onChange={(e) => setClassName(e.target.value)}
+                    disabled={isProcessing}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Assessment Date (Optional)</label>
+                  <Input 
+                    type="date" 
+                    value={assessmentDate}
+                    onChange={(e) => setAssessmentDate(e.target.value)}
+                    disabled={isProcessing}
+                  />
+                </div>
               </div>
               <div className="flex items-center gap-4">
                 <Input 
