@@ -24,7 +24,8 @@ export const studentSchema = z.object({
   "General Health Comments": z.string().optional(),
   "School Nurse / Doctor Name": z.string().optional(),
   "Medical Reg. Number": z.string().or(z.number().transform(v => String(v))).optional().or(z.literal("")),
-  "Date": z.any().optional()
+  "Date": z.any().optional(),
+  "Mother's Email": z.string().email("Invalid email format").optional().or(z.literal(""))
 })
 
 export type StudentData = z.infer<typeof studentSchema>

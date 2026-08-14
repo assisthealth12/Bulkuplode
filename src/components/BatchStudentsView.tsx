@@ -1,9 +1,10 @@
 import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { ArrowLeft, Edit2, Search, ChevronLeft, ChevronRight, Download, Users } from "lucide-react"
+import { ArrowLeft, Edit2, Search, ChevronLeft, ChevronRight, Download, Users, Mail } from "lucide-react"
 import type { StudentData } from "../lib/validation"
 import EditStudentPanel from "./EditStudentPanel"
+import SendEmailsDialog from "./SendEmailsDialog"
 
 interface BatchStudentsViewProps {
   upload: any
@@ -16,6 +17,7 @@ export default function BatchStudentsView({ upload, onBack, onDownload, isDownlo
   const [editingStudentIdx, setEditingStudentIdx] = useState<number | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
+  const [showEmailDialog, setShowEmailDialog] = useState(false)
   const itemsPerPage = 15
 
   const allStudents: StudentData[] = useMemo(() => {
@@ -88,6 +90,15 @@ export default function BatchStudentsView({ upload, onBack, onDownload, isDownlo
           <Button 
             variant="outline" 
             size="sm" 
+            onClick={() => setShowEmailDialog(true)}
+            className="h-8 text-xs border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+          >
+            <Mail className="w-3 h-3 mr-1.5" />
+            Send Emails
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
             onClick={() => onDownload(upload)}
             disabled={isDownloading}
             className="h-8 text-xs"
@@ -111,13 +122,14 @@ export default function BatchStudentsView({ upload, onBack, onDownload, isDownlo
               <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider">Height</TableHead>
               <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider">Weight</TableHead>
               <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider">BP</TableHead>
+              <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider">Email</TableHead>
               <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider text-right"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {currentStudentsWithIndex.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="text-center py-16 text-gray-400 text-sm">
+                <TableCell colSpan={10} className="text-center py-16 text-gray-400 text-sm">
                   {searchTerm ? "No students match your search." : "No students in this batch."}
                 </TableCell>
               </TableRow>
@@ -136,6 +148,7 @@ export default function BatchStudentsView({ upload, onBack, onDownload, isDownlo
                   <TableCell className="text-sm text-gray-500 tabular-nums">{student["Height"] || "—"}</TableCell>
                   <TableCell className="text-sm text-gray-500 tabular-nums">{student["Weight"] || "—"}</TableCell>
                   <TableCell className="text-sm text-gray-500 tabular-nums">{student["Blood Pressure"] || "—"}</TableCell>
+                  <TableCell className="text-sm text-gray-400 truncate max-w-[140px]" title={String(student["Mother's Email"] || "")}>{student["Mother's Email"] || <span className="text-gray-300">—</span>}</TableCell>
                   <TableCell className="text-right">
                     <button 
                       className="text-gray-300 hover:text-blue-600 transition-colors p-1"
@@ -186,6 +199,16 @@ export default function BatchStudentsView({ upload, onBack, onDownload, isDownlo
           studentIndex={editingStudentIdx}
           student={allStudents[editingStudentIdx]}
           onClose={() => setEditingStudentIdx(null)}
+        />
+      )}
+
+      {/* Send Emails Dialog */}
+      {showEmailDialog && (
+        <SendEmailsDialog
+          open={showEmailDialog}
+          onClose={() => setShowEmailDialog(false)}
+          students={allStudents}
+          className={upload.className || "Class"}
         />
       )}
     </div>

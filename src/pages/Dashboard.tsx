@@ -39,7 +39,7 @@ export default function Dashboard() {
       "Temperature", "SpO2", "Pulse", "Blood Pressure", "Right Eye Vision", 
       "Left Eye Vision", "Vision Comments", "Dental Findings", "Dental Comments", 
       "ENT Comments", "General Health Comments", "School Nurse / Doctor Name", 
-      "Medical Reg. Number", "Date"
+      "Medical Reg. Number", "Date", "Mother's Email"
     ]
     
     const wb = XLSX.utils.book_new()
