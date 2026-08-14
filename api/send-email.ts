@@ -64,8 +64,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       template_id: templateId,
       attachments: [
         {
-          filePath: `data:application/pdf;base64,${pdfBase64}`,
-          fileName: fileName || `${studentName || "student"}_health_report.pdf`,
+          file: `data:application/pdf;base64,${pdfBase64}`,
+          name: fileName || `${studentName || "student"}_health_report.pdf`,
         },
       ],
     };
