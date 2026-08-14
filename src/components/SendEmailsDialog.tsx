@@ -1,8 +1,8 @@
 import { useState, useRef, useCallback, useMemo } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Mail, CheckCircle2, XCircle, AlertTriangle, Loader2, MinusCircle } from "lucide-react"
-import { sendBatchEmails, type EmailProgress, type EmailResult } from "../lib/emailService"
+import { Mail, CheckCircle2, AlertTriangle, Loader2, MinusCircle } from "lucide-react"
+import { sendBatchEmails, type EmailProgress } from "../lib/emailService"
 import type { StudentData } from "../lib/validation"
 
 interface SendEmailsDialogProps {
