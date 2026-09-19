@@ -109,7 +109,7 @@ export default function Dashboard() {
       for (let i = 0; i < validData.length; i += BATCH_SIZE) {
         const batch = validData.slice(i, i + BATCH_SIZE)
         const results = await Promise.all(
-          batch.map(student => generateStudentPDF(student, logo1Bytes, logo2Bytes, signatureBytes))
+          batch.map((student: any) => generateStudentPDF(student, logo1Bytes, logo2Bytes, signatureBytes))
         )
         
         results.forEach((pdfBytes, j) => {

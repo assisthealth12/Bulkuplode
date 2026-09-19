@@ -1,5 +1,5 @@
 import { db, auth } from "../firebase"
-import { collection, addDoc, serverTimestamp, writeBatch, doc } from "firebase/firestore"
+import { collection, serverTimestamp, writeBatch, doc } from "firebase/firestore"
 import { type StudentData } from "./validation"
 
 export async function saveUploadData(
