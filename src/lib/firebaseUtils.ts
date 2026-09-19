@@ -1,5 +1,5 @@
 import { db, auth } from "../firebase"
-import { collection, addDoc, serverTimestamp } from "firebase/firestore"
+import { collection, addDoc, serverTimestamp, writeBatch, doc } from "firebase/firestore"
 import { type StudentData } from "./validation"
 
 export async function saveUploadData(
@@ -11,7 +11,10 @@ export async function saveUploadData(
   const user = auth.currentUser
   if (!user) throw new Error("User not authenticated")
 
-  const uploadDoc = await addDoc(collection(db, "uploads"), {
+  const batch = writeBatch(db)
+  const uploadDocRef = doc(collection(db, "uploads"))
+
+  batch.set(uploadDocRef, {
     className,
     uploadName: file.name,
     totalStudents: validData.length,
@@ -25,15 +28,18 @@ export async function saveUploadData(
 
   // Save student records for individual querying if needed
   for (const student of validData) {
-    await addDoc(collection(db, "students"), {
-      uploadId: uploadDoc.id,
+    const studentDocRef = doc(collection(db, "students"))
+    batch.set(studentDocRef, {
+      uploadId: uploadDocRef.id,
       className,
       ...student,
       createdAt: serverTimestamp()
     })
   }
 
-  return uploadDoc.id
+  await batch.commit()
+
+  return uploadDocRef.id
 }
 
 export async function updateStudentInUpload(uploadId: string, studentIndex: number, newStudentData: StudentData) {

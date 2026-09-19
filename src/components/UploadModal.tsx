@@ -121,12 +121,11 @@ export default function UploadModal({ onClose }: UploadModalProps) {
   const generateReports = async () => {
     setProgressState("generating")
     try {
-      // Fetch logos
-      const logo1Res = await fetch("/Images/LOGO1.png")
-      const logo1Bytes = await logo1Res.arrayBuffer()
-      
-      const logo2Res = await fetch("/Images/LOGO2.png")
-      const logo2Bytes = await logo2Res.arrayBuffer()
+      // Fetch all images once and cache the ArrayBuffers
+      const [logo1Bytes, logo2Bytes] = await Promise.all([
+        fetch("/Images/LOGO1.png").then(r => r.arrayBuffer()),
+        fetch("/Images/LOGO2.png").then(r => r.arrayBuffer()),
+      ])
 
       let signatureBytes: ArrayBuffer | undefined = undefined
       const signatureNames = ['Singature.png', 'signature.png', 'Signature.png', 'singature.png']
@@ -134,18 +133,13 @@ export default function UploadModal({ onClose }: UploadModalProps) {
         try {
           const sigRes = await fetch(`/Images/${name}`)
           const ct = sigRes.headers.get('content-type') || ''
-          console.log(`[Signature] Trying /Images/${name}: status=${sigRes.status}, content-type=${ct}`)
           if (sigRes.ok && ct.startsWith('image/')) {
             signatureBytes = await sigRes.arrayBuffer()
-            console.log(`[Signature] Loaded ${name}, ${signatureBytes.byteLength} bytes`)
             break
           }
         } catch (e) {
           console.warn(`[Signature] Error fetching ${name}:`, e)
         }
-      }
-      if (!signatureBytes) {
-        console.warn('[Signature] No signature image found in /Images/')
       }
 
       const { generateStudentPDF } = await import("../lib/pdfGenerator")
@@ -153,18 +147,29 @@ export default function UploadModal({ onClose }: UploadModalProps) {
       
       const zip = new JSZip()
       
-      for (let i = 0; i < validData.length; i++) {
-        const student = validData[i]
-        const pdfBytes = await generateStudentPDF(student, logo1Bytes, logo2Bytes, signatureBytes)
+      // Generate PDFs in parallel batches for speed
+      const BATCH_SIZE = 5
+      for (let i = 0; i < validData.length; i += BATCH_SIZE) {
+        const batch = validData.slice(i, i + BATCH_SIZE)
+        const results = await Promise.all(
+          batch.map(student => generateStudentPDF(student, logo1Bytes, logo2Bytes, signatureBytes))
+        )
         
-        // Sanitize name for filename and append index to handle duplicate names
-        const safeName = student["Student Name"].replace(/[^a-z0-9]/gi, '_').toLowerCase()
-        zip.file(`${safeName}_${i + 1}_report.pdf`, pdfBytes)
+        results.forEach((pdfBytes, j) => {
+          const idx = i + j
+          const safeName = validData[idx]["Student Name"].replace(/[^a-z0-9]/gi, '_').toLowerCase()
+          zip.file(`${safeName}_${idx + 1}_report.pdf`, pdfBytes)
+        })
         
-        setGenerationProgress(i + 1)
+        setGenerationProgress(Math.min(i + BATCH_SIZE, validData.length))
+        // Yield to event loop for UI updates
+        await new Promise(resolve => setTimeout(resolve, 0))
       }
 
-      const zipBlob = await zip.generateAsync({ type: "blob" })
+      const zipBlob = await zip.generateAsync({ 
+        type: "blob",
+        compression: "STORE" // PDFs are already compressed, skip re-compression
+      })
       
       try {
         const { saveUploadData } = await import("../lib/firebaseUtils")

@@ -275,24 +275,24 @@ export async function generateStudentPDF(
 
   // --- Logos -----------------------------------------------------------
   const logoTop = height - 40
+  
+  // Detect image format from magic bytes to avoid try/catch overhead per PDF
+  const detectFormat = (buf: ArrayBuffer): 'png' | 'jpg' => {
+    const bytes = new Uint8Array(buf)
+    if (bytes[0] === 0x89 && bytes[1] === 0x50) return 'png'
+    return 'jpg'
+  }
+  
   try {
-    await r.drawImageFit(logo1Bytes, 'png', MARGIN + 10, logoTop, 90, 60)
+    await r.drawImageFit(logo1Bytes, detectFormat(logo1Bytes), MARGIN + 10, logoTop, 90, 60)
   } catch {
-    try {
-      await r.drawImageFit(logo1Bytes, 'jpg', MARGIN + 10, logoTop, 90, 60)
-    } catch {
-      console.warn('Failed to embed logo 1 (tried PNG and JPG)')
-    }
+    console.warn('Failed to embed logo 1')
   }
 
   try {
-    await r.drawImageFit(logo2Bytes, 'jpg', width - MARGIN - 70, logoTop, 60, 60)
+    await r.drawImageFit(logo2Bytes, detectFormat(logo2Bytes), width - MARGIN - 70, logoTop, 60, 60)
   } catch {
-    try {
-      await r.drawImageFit(logo2Bytes, 'png', width - MARGIN - 70, logoTop, 60, 60)
-    } catch {
-      console.warn('Failed to embed logo 2 (tried JPG and PNG)')
-    }
+    console.warn('Failed to embed logo 2')
   }
 
   // --- Outer border --------------------------------------------------------
@@ -479,13 +479,9 @@ export async function generateStudentPDF(
   // Signature Image (if provided) — position it so it sits just above the Signature line
   if (signatureBytes) {
     try {
-      await r.drawImageFit(signatureBytes, 'png', MARGIN + 65, signBoxY - 18, 140, 25)
+      await r.drawImageFit(signatureBytes, detectFormat(signatureBytes), MARGIN + 65, signBoxY - 18, 140, 25)
     } catch {
-      try {
-        await r.drawImageFit(signatureBytes, 'jpg', MARGIN + 65, signBoxY - 18, 140, 25)
-      } catch {
-        console.warn('[PDF] Failed to embed signature image')
-      }
+      console.warn('[PDF] Failed to embed signature image')
     }
   }
 
